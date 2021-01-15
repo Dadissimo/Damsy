@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8'>
+    <title>my first pdfmake example</title>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.69/pdfmake.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.69/vfs_fonts.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="papaparse.min.js"></script>
+</head>
+<body>
+    <form class="form-inline">
+        <div class="form-group">
+          <label for="files">Upload a CSV formatted file:</label>
+          <input type="file" id="files"  class="form-control" accept=".csv" required />
+        </div>
+        <div class="form-group">
+         <button type="submit" id="submit-file" class="btn btn-primary">Upload File</button>
+         </div>
+    </form>
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#submit-file').on("click",function(e){
+            e.preventDefault();
+            $('#files').parse({
+                config: {
+                    delimiter: ",",
+                    complete: displayHTMLTable,
+                },
+                before: function(file, inputElem)
+                {
+                    console.log("Parsing file...", file);
+                },
+                error: function(err, file)
+                {
+                    // console.log("ERROR:", err, file);
+                },
+                complete: function()
+                {
+                    // console.log("Done with all files");
+                }
+            });
+        });
+        
+        function displayHTMLTable(results){
+            const data = results.data;
+
+            const namingRow = data[0];
+            const topics = namingRow.filter(topic => topic);
+            topics.splice(0, 1) // remove name
+            topics.splice(topics.length - 2, 2); // remove finale grading & total score
+
+            console.log(topics);
+
+            data.splice(0, 2); // remove header
+            const studentData = data;
+
+            const students = studentData.map(student => {
+                const name = student[0];
+
+                const gradings = topics.map((topic, i) => {
+                    const assignmentGrade = +(student[i * 3 + 1]);
+                    const difficulty = +(student[i * 3 + 2]);
+                    const percentage = +(student[i * 3 + 3]);
+
+                    return {topic, assignmentGrade, difficulty, percentage};
+                })
+
+                return {name, gradings};
+            })
+
+            console.log(students);
+
+            const testStudent = students[0];
+            const assigments = ['Assignments'].concat(
+                testStudent.gradings.map(grade => grade.topic)
+            );
+            const execution = ['Ausführung'].concat(
+                testStudent.gradings.map(grade => grade.assignmentGrade)
+            );
+            const stars = ['Sterne'].concat(
+                testStudent.gradings.map(grade => convertToStars(grade.difficulty))
+            );
+            const score = ['Prüfung in %'].concat(
+                testStudent.gradings.map(grade => grade.percentage)
+            );
+
+            const dd = {
+                pageOrientation: 'landscape',
+                content: [
+                    {text: 'Leistungsnachweis Mathematik - ' + testStudent.name, style: 'header'},
+                    {
+                        style: 'tableExample',
+                        table: {
+                            body: [
+                                assigments,
+                                execution,
+                                stars,
+                                score
+                            ]
+                        }
+                    }
+                ],
+                styles: {
+                    header: {
+                        fontSize: 18,
+                        bold: true,
+                        margin: [0, 0, 0, 10]
+                    },
+                    subheader: {
+                        fontSize: 16,
+                        bold: true,
+                        margin: [0, 10, 0, 5]
+                    },
+                    tableExample: {
+                        margin: [0, 5, 0, 15]
+                    },
+                    tableHeader: {
+                        bold: true,
+                        fontSize: 13,
+                        color: 'black'
+                    }
+                },
+                
+            }
+            pdfMake.createPdf(dd).download();
+        }
+        function convertToStars(value) {
+            let str = '';
+            for (let index = 0; index < value; index++) {
+                str += '*';                
+            }
+            return str;
+        }
+    });
+  </script>
