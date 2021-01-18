@@ -98,6 +98,10 @@ function displayHTMLTable(results) {
                         score
                     ]
                 }
+            },
+            {
+                svg: createSVG(student, student.name === 'Alida St.'),
+                alignment: 'center'
             }
         ];
 
