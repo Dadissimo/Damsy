@@ -1,11 +1,22 @@
+import React from 'react';
+
 import Papa from 'papaparse';
 import Grade from '../entity/Grade';
 import Student from '../entity/Student';
 import Topic from '../entity/Topic';
 import TopicDefinition from '../entity/TopicDefinition';
 
-const Import = ({onChange}) => {
-    const onParsingComplete = result => {
+import './Import.css';
+
+const Import = ({onChange, onClear}) => {
+    const inputRef = React.useRef();
+
+    const handleClear = () => {
+        inputRef.current.value = null;
+        onClear();
+    }
+
+    const onParsingComplete = (result, file) => {
         const {data} = result;
 
         const topicsData = extractTopicData(data);
@@ -14,7 +25,7 @@ const Import = ({onChange}) => {
         const topicDefinitions = createTopicDefinitions(topicsData);
         const students = createStudents(topicDefinitions, studentData);
 
-        onChange(students);
+        onChange({students, file});
     }
     
     const onChangeHandler = event => {
@@ -30,7 +41,15 @@ const Import = ({onChange}) => {
     };
 
     return (
-        <input type="file" name="file" onChange={ onChangeHandler }/>
+        <div className="d-flex flex-column w-100">
+            {inputRef.current?.value && <button onClick={ handleClear } className="btn btn-info mb-1">{'Clear Data'}</button>}
+            <button className="btn btn-info">
+                <input ref={ inputRef } onChange={ onChangeHandler } className="fileUploadButton" type="file" id='fileUpload' name='fileUpload' />
+                <label htmlFor='fileUpload' className="d-flex align-items-center justify-content-center w-100 mb-0">
+                    {'Upload CSV'}
+                </label>
+            </button>
+        </div>
     );
 }
 
@@ -43,9 +62,9 @@ const createStudents = (topicDefinitions, studentData) => {
         const name = student[0];
 
         const topics = topicDefinitions.map((def, i) => {
-            const assignmentGrade = +student[i * 3 + 1];
-            const difficulty = +student[i * 3 + 2];
-            const testScore = +student[i * 3 + 3];
+            const assignmentGrade = student[i * 3 + 1];
+            const difficulty = student[i * 3 + 2];
+            const testScore = student[i * 3 + 3];
 
             const grade = new Grade(assignmentGrade, difficulty, testScore);
             return new Topic(def, grade);

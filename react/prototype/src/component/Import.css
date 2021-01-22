@@ -1,0 +1,17 @@
+.fileUploadButton {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+.fileUploadButton + label {
+    display: inline-block;
+}
+
+.fileUploadButton:focus + label,
+.fileUploadButton + label:hover {
+    cursor: pointer;
+}
