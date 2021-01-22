@@ -42,8 +42,9 @@ function displayHTMLTable(results) {
             const assignmentGrade = student[i * 3 + 1];
             const difficulty = student[i * 3 + 2];
             const percentage = student[i * 3 + 3];
+            const abbreviation = topic.charAt(0);
 
-            return {topic, assignmentGrade, difficulty, percentage};
+            return {topic, abbreviation, assignmentGrade, difficulty, percentage};
         })
 
         const assignmentAvarage = getGradeAvarage(gradings.map(grade => grade.assignmentGrade));
@@ -100,7 +101,7 @@ function displayHTMLTable(results) {
                 }
             },
             {
-                svg: createSVG(student, student.name === 'Alida St.'),
+                svg: createSVG(student, student.name === 'A'),
                 alignment: 'center'
             }
         ];

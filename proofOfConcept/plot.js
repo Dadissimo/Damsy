@@ -2,7 +2,7 @@ const createSVG = (student, asPreview) => {
     const svg = d3.select(document.createElementNS('http://www.w3.org/2000/svg', 'svg'));
     
     // set the dimensions and margins of the graph
-    const margin = {top: 10, right: 30, bottom: 30, left: 60},
+    const margin = {top: 10, right: 30, bottom: 90, left: 60},
         width = 360 - margin.left - margin.right,
         height = 300 - margin.top - margin.bottom;
 
@@ -18,14 +18,21 @@ const createSVG = (student, asPreview) => {
     const data = student.gradings.map((grade, i) => ({...grade, index: i}));
 
     // Add X axis
-    const x = d3.scaleLinear()
-    .domain(d3.extent(data, function(d) { return d.index; }))
+    const x = d3.scaleBand()
+    .domain(data.map(d => d.topic))
     .range([ 0, width ]);
+
     canvas.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x)
-        .tickFormat(d => '')
-    );
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x)
+            .tickFormat(d => d.charAt(0))
+        );
+            // .selectAll('text')
+            // .attr('y', 0)
+            // .attr('x', 9)
+            // .attr('dy', '.35em')
+            // .attr('transform', 'rotate(0)')
+            // .style('text-anchor', 'start');
 
     // Add Y axis
     const y = d3.scaleLinear()
@@ -44,8 +51,9 @@ const createSVG = (student, asPreview) => {
         .attr("stroke", "steelblue")
         .attr("stroke-width", 1.5)
         .attr("d", d3.line()
-            .x(function(d) { return x(d.index) })
+            .x(function(d) { return x(d.topic) })
             .y(function(d) { return y(d.percentage) })
+            .curve(d3.curveBasis)
             );
 
     canvas.append("path")
@@ -54,8 +62,9 @@ const createSVG = (student, asPreview) => {
         .attr("stroke", "red")
         .attr("stroke-width", 1.5)
         .attr("d", d3.line()
-            .x(function(d) { return x(d.index) })
-            .y(function(d) { return y(d.assignmentGrade / 4 * 100) })
+            .x(function(d) { return x(d.topic) })
+            .y(function(d) { return y(d.assignmentGrade / 3 * 100) })
+            .curve(d3.curveBasis)
             );
     
     canvas.append("path")
@@ -64,8 +73,9 @@ const createSVG = (student, asPreview) => {
         .attr("stroke", "green")
         .attr("stroke-width", 1.5)
         .attr("d", d3.line()
-            .x(function(d) { return x(d.index) })
+            .x(function(d) { return x(d.topic) })
             .y(function(d) { return y(d.difficulty / 4 * 100) })
+            .curve(d3.curveBasis)
             );
 
     const svgString = domNodeToString(svg.node());
