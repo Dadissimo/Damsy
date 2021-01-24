@@ -21,23 +21,22 @@ const Import = ({onChange, onClear}) => {
     }
 
     const onParsingComplete = (sheets, file) => {
-        const data = sheets[0];
+        const sheetData = sheets.map(sheet => {
+            const metaData = extractMetaData(sheet);
+            const topicsData = extractTopicData(sheet);
+            const classData = extractClassesData(sheet);
 
-        const metaData = extractMetaData(data);
-        const topicsData = extractTopicData(data);
-        const classData = extractClassesData(data);
-        console.log(classData);
-        const studentData = classData[0].data;
+            const topicDefinitions = createTopicDefinitions(topicsData);
 
-        const topicDefinitions = createTopicDefinitions(topicsData);
-        const students = createStudents(topicDefinitions, studentData);
+            const classes = classData.map(c => {
+                const students = createStudents(topicDefinitions, c.data);
+                return {name: c.name, students};
+            });
 
-        const classes = classData.map(c => {
-            const students = createStudents(topicDefinitions, c.data);
-            return {name: c.name, students};
-        });
+            return {classes, file, metaData, topics: topicsData};
+        })
 
-        onChange({classes, students, file, metaData});
+        onChange(sheetData);
     }
     
     const onChangeHandler = event => {

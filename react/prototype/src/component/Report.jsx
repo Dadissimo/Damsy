@@ -4,43 +4,51 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from "pdfmake/build/vfs_fonts";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-const Report = ({data}) => {
+const Report = ({data, selectedTrimester}) => {
     if (!data) return null;
+    data = data[selectedTrimester];
 
     const handleClick = () => {
-        const contents = generateContents(data.students);
-    
-        const docDefinition = {
-            pageOrientation: 'landscape',
-            content: contents,
-            styles: {
-                    header: {
-                        fontSize: 18,
-                        bold: true,
-                        margin: [0, 0, 0, 10]
-                    },
-                    table: {
-                        margin: [0, 5, 0, 15]
-                    }
-            }
-        };
-    
-        pdfMake.createPdf(docDefinition).download('Trimester Report.pdf');
+        const {classes, metaData} = data;
+        if (!classes) return null;
+
+        classes.forEach(currentClass => {
+            const contents = generateContents(currentClass.students, metaData);
+            const docDefinition = generateDocDefinition(contents);
+            pdfMake.createPdf(docDefinition).download(metaData.trimester + ' Trimester ' + metaData.level + currentClass.name + '.pdf');
+        })
     }
 
     return (
-        <button className="btn btn-info" onClick={ handleClick }>{'Generate Report'}</button>
+        <button className="btn btn-info" onClick={ handleClick }>{'Generate Report For ' + (selectedTrimester + 1) + ' Trimester'}</button>
     );
 }
 
-const generateContents = students => {
+const generateDocDefinition = content => {
+    return {
+        pageOrientation: 'landscape',
+        content,
+        styles: {
+                header: {
+                    fontSize: 18,
+                    bold: true,
+                    margin: [0, 0, 0, 10]
+                },
+                table: {
+                    margin: [0, 5, 0, 15]
+                }
+        }
+    };
+}
+
+const generateContents = (students, metaData) => {
     return students.map((student, i) => {
         const noBreak = i === 0;
-        return generateReportForStudent(student, noBreak);
+        return generateReportForStudent(student, metaData, noBreak);
     })
 }
 
-const generateReportForStudent = (student, noBreak = false) => {
+const generateReportForStudent = (student, metaData, noBreak = false) => {
     // const assignments = ['Assignments'].concat(
     //     student.topics.map(topic => {
     //         return {
@@ -74,8 +82,8 @@ const generateReportForStudent = (student, noBreak = false) => {
                 widths: ['*', 200],
                 body: [
                     [
-                        {text: 'Leistungsnachweis Mathematik', style: 'header', fillColor: '#eeeeee'}, 
-                        {text: '1 Trimester 2019/20', style: 'header', fillColor: '#eeeeee', alignment: 'right'}
+                        {text: 'Leistungsnachweis ' + metaData.subject, style: 'header', fillColor: '#eeeeee'}, 
+                        {text: metaData.trimester + ' Trimester ' + metaData.year, style: 'header', fillColor: '#eeeeee', alignment: 'right'}
                     ]
                 ]
             },
@@ -94,7 +102,6 @@ const generateReportForStudent = (student, noBreak = false) => {
                 ]
             },
             layout: { paddingTop: function (index, node) {
-                console.log(index);
                 if(index === 0) applyVerticalAlignment(node, index, 'bottom');
                 return 0;
             }, },

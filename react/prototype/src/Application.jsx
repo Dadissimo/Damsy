@@ -8,9 +8,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Application = () => {
     const [data, setData] = React.useState(undefined);
+    const [selectedTrimester, setSelectedTrimester] = React.useState(0);
 
     const handleChange = result => setData(result);
-    const handleClear = () => setData(undefined);
+    const handleClear = () => {
+        setData(undefined);
+        setSelectedTrimester(0);
+    };
+    const handleTrimesterChange = index => setSelectedTrimester(index);
 
     if (data) console.log(data);
 
@@ -20,8 +25,8 @@ const Application = () => {
             <div className="d-flex justify-content-center">
                 <div className="bg-light p-4 d-flex flex-column w-50">
                     <Import onChange={ handleChange } onClear={ handleClear } />
-                    <Preview data={ data } />
-                    <Report data={ data } />
+                    <Preview data={ data } selectedTrimester={ selectedTrimester } onTrimesterChange={ handleTrimesterChange } />
+                    <Report data={ data } selectedTrimester={ selectedTrimester } />
                 </div>
             </div>
         </div>
