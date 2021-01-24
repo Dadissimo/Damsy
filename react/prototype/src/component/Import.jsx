@@ -1,6 +1,6 @@
 import React from 'react';
+import readXlsxFile from 'read-excel-file';
 
-import Papa from 'papaparse';
 import Grade from '../entity/Grade';
 import Student from '../entity/Student';
 import Topic from '../entity/Topic';
@@ -16,28 +16,32 @@ const Import = ({onChange, onClear}) => {
         onClear();
     }
 
-    const onParsingComplete = (result, file) => {
-        const {data} = result;
+    const onParsingComplete = (sheets, file) => {
+        const data = sheets[0];
 
+        const metaData = extractMetaData(data);
         const topicsData = extractTopicData(data);
         const studentData = extractStudentData(data);
 
         const topicDefinitions = createTopicDefinitions(topicsData);
         const students = createStudents(topicDefinitions, studentData);
 
-        onChange({students, file});
+        onChange({students, file, metaData});
     }
     
     const onChangeHandler = event => {
         const file = event.target.files[0];
         if (!file) return null;
 
-        Papa.parse(file, {
-            config: {
-                delimiter: ";",
-            },
-            complete: onParsingComplete
-        });
+        readXlsxFile(file, { getSheets: true}).then(sheets => {
+            const promises = [];
+            sheets.forEach(sheet => {
+                promises.push(readXlsxFile(file, { sheet: sheet.name }));
+            });
+            Promise.all(promises).then(sheets => {
+                onParsingComplete(sheets, file);
+            });
+        })
     };
 
     return (
@@ -46,7 +50,7 @@ const Import = ({onChange, onClear}) => {
             <button className="btn btn-info">
                 <input ref={ inputRef } onChange={ onChangeHandler } className="fileUploadButton" type="file" id='fileUpload' name='fileUpload' />
                 <label htmlFor='fileUpload' className="d-flex align-items-center justify-content-center w-100 mb-0">
-                    {'Upload CSV'}
+                    {'Upload XLSX'}
                 </label>
             </button>
         </div>
@@ -74,6 +78,12 @@ const createStudents = (topicDefinitions, studentData) => {
     })
 }
 
+const extractMetaData = data => {
+    const metaData = data[0];
+    const [teacher, subject, level, year, trimester] = metaData;
+    return {teacher, subject, level, year, trimester};
+}
+
 const extractStudentData = initData => {
     const data = [...initData];
     data.splice(0, 2); // remove header
@@ -81,7 +91,7 @@ const extractStudentData = initData => {
 }
 
 const extractTopicData = data => {
-    const namingRow = data[0];
+    const namingRow = data[1];
     const topicsData = namingRow.filter(topic => topic);
     topicsData.splice(0, 1) // remove name
     topicsData.splice(topicsData.length - 2, 2); // remove finale grading & total score

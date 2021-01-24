@@ -127,22 +127,22 @@ function getFillColor(percentage) {
     return colors[100 - Math.round(percentage)];
 }
 
-function writeRotatedText(text, config = {}) {
-    const {font = '20pt Arial', rotate = -0.5 * Math.PI} = config;
-    let ctx;
-    const canvas = document.createElement('canvas');
-    canvas.width = 50;
-    canvas.height = 300;
-    ctx = canvas.getContext('2d');
-    ctx.font =  font;
-    ctx.save();
-    ctx.translate(50, 300);
-    ctx.rotate(rotate);
-    ctx.fillStyle = '#000';
-    ctx.fillText(text, 0, 0);
-    ctx.restore();
-    return canvas.toDataURL();
-};
+// function writeRotatedText(text, config = {}) {
+//     const {font = '20pt Arial', rotate = -0.5 * Math.PI} = config;
+//     let ctx;
+//     const canvas = document.createElement('canvas');
+//     canvas.width = 50;
+//     canvas.height = 300;
+//     ctx = canvas.getContext('2d');
+//     ctx.font =  font;
+//     ctx.save();
+//     ctx.translate(50, 300);
+//     ctx.rotate(rotate);
+//     ctx.fillStyle = '#000';
+//     ctx.fillText(text, 0, 0);
+//     ctx.restore();
+//     return canvas.toDataURL();
+// };
 
 function findInlineHeight(cell, maxWidth, usedWidth = 0) {
     let calcLines = (inlines) => {
