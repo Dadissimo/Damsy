@@ -8,6 +8,10 @@ import TopicDefinition from '../entity/TopicDefinition';
 
 import './Import.css';
 
+const METADATA_POS = 0;
+const TOPIC_NAMES_POS = 1;
+const CLASS_IDENTIFIER = '_Klasse';
+
 const Import = ({onChange, onClear}) => {
     const inputRef = React.useRef();
 
@@ -21,12 +25,19 @@ const Import = ({onChange, onClear}) => {
 
         const metaData = extractMetaData(data);
         const topicsData = extractTopicData(data);
-        const studentData = extractStudentData(data);
+        const classData = extractClassesData(data);
+        console.log(classData);
+        const studentData = classData[0].data;
 
         const topicDefinitions = createTopicDefinitions(topicsData);
         const students = createStudents(topicDefinitions, studentData);
 
-        onChange({students, file, metaData});
+        const classes = classData.map(c => {
+            const students = createStudents(topicDefinitions, c.data);
+            return {name: c.name, students};
+        });
+
+        onChange({classes, students, file, metaData});
     }
     
     const onChangeHandler = event => {
@@ -78,20 +89,47 @@ const createStudents = (topicDefinitions, studentData) => {
     })
 }
 
+const extractClassesData = initData => {
+    const data = [...initData];
+    data.splice(0, 3); // skip metadata & topics & header
+
+    if (!data[0][0].includes(CLASS_IDENTIFIER)) throw Error('Invalid excel file!');
+
+    let currentClassName;
+    const classData = {};
+    data.forEach(row => {
+        if (row[0]?.includes(CLASS_IDENTIFIER)) {
+            currentClassName = row[0];
+        } else {
+            if (!classData[currentClassName]) classData[currentClassName] = [];
+            classData[currentClassName].push(row)
+        }
+    })
+
+    const classesData = Object.keys(classData).map(key => {
+        const element = classData[key];
+        return {name: key.replace(CLASS_IDENTIFIER + ' ', ''), data: element};
+    })
+
+    const classes = classesData.map(currentClassData => extractStudentData(currentClassData));
+
+    return classes;
+}
+
 const extractMetaData = data => {
-    const metaData = data[0];
+    const metaData = data[METADATA_POS];
     const [teacher, subject, level, year, trimester] = metaData;
     return {teacher, subject, level, year, trimester};
 }
 
-const extractStudentData = initData => {
-    const data = [...initData];
-    data.splice(0, 2); // remove header
-    return data.filter(d => d[0]);
+const extractStudentData = currentClass => {
+    const {data, name} = currentClass;
+    const filteredData = data.filter(d => d[0]);
+    return {data: filteredData, name};
 }
 
 const extractTopicData = data => {
-    const namingRow = data[1];
+    const namingRow = data[TOPIC_NAMES_POS];
     const topicsData = namingRow.filter(topic => topic);
     topicsData.splice(0, 1) // remove name
     topicsData.splice(topicsData.length - 2, 2); // remove finale grading & total score
