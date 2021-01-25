@@ -28,13 +28,13 @@ const Application = () => {
             <h1 className="d-flex justify-content-center border-bottom pb-1">{'Prototype v0.1'}</h1>
             <div className="d-flex justify-content-center">
                 <div className="row w-100">
-                    <div className="col-4">
+                    <div className="col-3">
                         <div className="bg-light p-4 d-flex flex-column justify-content-between" style={{height: '90vh'}}>
                             <Import onChange={ handleImportChange } onClear={ handleClear } />
                             <Report data={ data } selected={ selected } />
                         </div>
                     </div>
-                    <div className="col-8">
+                    <div className="col">
                         <Preview data={ data } selected={ selected } onChange={ handlePreviewChange } />
                     </div>
                 </div>
