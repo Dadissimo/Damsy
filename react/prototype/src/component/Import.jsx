@@ -27,8 +27,8 @@ const Import = ({onChange, onClear}) => {
 
     return (
         <div className="d-flex flex-column w-100">
-            {inputRef.current?.value && <button onClick={ handleClear } className="btn btn-info mb-1">{'Clear Data'}</button>}
-            <button className="btn btn-info">
+            <button disabled={ !inputRef.current?.value } onClick={ handleClear } className="btn btn-danger mb-1">{'Clear Data'}</button>
+            <button className="btn btn-primary">
                 <input ref={ inputRef } onChange={ onChangeHandler } className="fileUploadButton" type="file" id='fileUpload' name='fileUpload' />
                 <label htmlFor='fileUpload' className="d-flex align-items-center justify-content-center w-100 mb-0">
                     {'Upload XLSX'}

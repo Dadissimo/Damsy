@@ -1,25 +1,31 @@
-const Preview = ({data, selectedTrimester, onTrimesterChange}) => {
+const Preview = ({data, selected, onChange}) => {
     if (!data) return null;
 
     const renderTrimesterButtons = data.map((d, i) => {
-        const handleTrimesterChange = () => onTrimesterChange(i);
-        const buttonClass = 'd-flex flex-grow-1 btn m-1 ' + (selectedTrimester === i ? 'btn-success' : 'btn-info'); 
+        const handleClick = () => onChange('trimester', i);
+        const buttonClass = 'd-flex flex-grow-1 btn m-1 ' + (selected.trimester === i ? 'btn-success' : 'btn-secondary'); 
         return (
-            <button key={ d.metaData.trimester } onClick={ handleTrimesterChange } className={ buttonClass }>{'Trimester ' + d.metaData.trimester}</button>
+            <button key={ d.metaData.trimester } onClick={ handleClick } className={ buttonClass }>{'Trimester ' + d.metaData.trimester}</button>
         );
     });
 
-    const {file, classes, topics, metaData} = data[selectedTrimester];
+    const {file, classes, topics, metaData} = data[selected.trimester];
 
     const renderTopics = topics.map((topic, i) => {
         return (
             <h6 key={ topic + i} className="p-1 col border" >{topic}</h6>
         );
     });
-        
-    const renderClasses = classes.map(currentClass => {
-        return <ClassPreview key={ currentClass.name } data={ currentClass }/>
-    });
+
+    const renterClassButtons = classes.map((currentClass, i) => {
+        const handleClick = () => onChange('class', i);
+        const buttonClass = 'd-flex flex-grow-1 btn m-1 ' + (selected.class === i ? 'btn-success' : 'btn-secondary'); 
+        return (
+            <button key={ currentClass.name } onClick={ handleClick } className={ buttonClass }>{'Class ' + currentClass.name}</button>
+        );
+    })
+
+    const selectedClass = classes[selected.class];
 
     return (
         <div className="m-1">
@@ -37,7 +43,10 @@ const Preview = ({data, selectedTrimester, onTrimesterChange}) => {
             <div className="row mx-1 mb-2">
                 {renderTopics}
             </div>
-            {renderClasses}
+            <div className="d-flex justify-content-between">
+                {renterClassButtons}
+            </div>
+            <ClassPreview data={ selectedClass } />
         </div>
     );
 }
@@ -45,11 +54,11 @@ const Preview = ({data, selectedTrimester, onTrimesterChange}) => {
 const ClassPreview = ({data}) => {
     const {name, students} = data;
 
-    const renderStundets = students.map(student => {
+    const renderStudents = students.map(student => {
         return (
             <div key={ student.name } className="d-flex row">
                 <div className="d-flex col-3">
-                    {'Schüler: ' + student.name}
+                    {student.name}
                 </div>
                 <div className="d-flex col">
                     {'Ø: [' + student.avarage.assignmentGrade + ' , ' + student.avarage.difficulty + ' , ' + student.avarage.testScore + ']'}
@@ -61,7 +70,7 @@ const ClassPreview = ({data}) => {
     return (
         <div>
             <h6 className="border-bottom pb-1">{'Class: ' + name}</h6>
-            {renderStundets}
+            {renderStudents}
         </div>
     )
 }

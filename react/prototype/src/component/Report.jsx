@@ -5,9 +5,10 @@ import applyVerticalAlignment from '../utility/applyVerticalAlignment';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-const Report = ({data, selectedTrimester}) => {
-    if (!data) return null;
-    data = data[selectedTrimester];
+const Report = ({data, selected}) => {
+    if (!data) return <button disabled className="btn btn-success mt-1">{'Generate Trimester Report'}</button>;
+
+    data = data[selected.trimester];
 
     const handleClick = () => {
         const {classes, metaData} = data;
@@ -21,7 +22,7 @@ const Report = ({data, selectedTrimester}) => {
     }
 
     return (
-        <button className="btn btn-info" onClick={ handleClick }>{'Generate Report For ' + (selectedTrimester + 1) + ' Trimester'}</button>
+        <button className="btn btn-success mt-1" onClick={ handleClick }>{'Generate Report(s) For Trimester ' + (selected.trimester + 1)}</button>
     );
 }
 
