@@ -1,18 +1,19 @@
 const Preview = ({data, selectedTrimester, onTrimesterChange}) => {
     if (!data) return null;
-    const {file, classes, topics, metaData} = data[selectedTrimester];
 
-    const renderTopics = topics.map((topic, i) => {
-        return (
-            <input value={ topic } key={ topic + i} className="p-1 col border" />
-        );
-    })
-    
     const renderTrimesterButtons = data.map((d, i) => {
         const handleTrimesterChange = () => onTrimesterChange(i);
         const buttonClass = 'd-flex flex-grow-1 btn m-1 ' + (selectedTrimester === i ? 'btn-success' : 'btn-info'); 
         return (
-            <button onClick={ handleTrimesterChange } className={ buttonClass }>{'Trimester ' + (i + 1)}</button>
+            <button key={ d.metaData.trimester } onClick={ handleTrimesterChange } className={ buttonClass }>{'Trimester ' + d.metaData.trimester}</button>
+        );
+    });
+
+    const {file, classes, topics, metaData} = data[selectedTrimester];
+
+    const renderTopics = topics.map((topic, i) => {
+        return (
+            <h6 key={ topic + i} className="p-1 col border" >{topic}</h6>
         );
     });
         
