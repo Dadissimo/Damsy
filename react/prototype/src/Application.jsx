@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import Import from './component/Import';
 import Preview from './component/Preview';
-import Report from './component/Report';
+import Report from './component/ReportHtml2pdf';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 

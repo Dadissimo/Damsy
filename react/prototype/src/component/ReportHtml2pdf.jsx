@@ -1,13 +1,13 @@
 import React from 'react';
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from "pdfmake/build/vfs_fonts";
 import applyVerticalAlignment from '../utility/applyVerticalAlignment';
+import html2Pdf from 'html2pdf.js';
 
 import Plot from '../logic/Plot';
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
+console.log(html2Pdf);
 const Report = ({data, selected}) => {
+    const ref = React.useRef();
+
     if (!data) return <button disabled className="btn btn-success mt-1">{'Generate Trimester Report'}</button>;
 
     data = data[selected.trimester];
@@ -17,14 +17,24 @@ const Report = ({data, selected}) => {
         if (!classes) return null;
 
         classes.forEach(currentClass => {
-            const contents = generateContents(currentClass.students, metaData);
-            const docDefinition = generateDocDefinition(contents);
-            pdfMake.createPdf(docDefinition).download(metaData.trimester + ' Trimester ' + metaData.level + currentClass.name + '.pdf');
+
+            // const contents = generateContents(currentClass.students, metaData);
+            // const docDefinition = generateDocDefinition(contents);
+            // pdfMake.createPdf(docDefinition).download(metaData.trimester + ' Trimester ' + metaData.level + currentClass.name + '.pdf');
+
+            var opt = {
+                filename:     'myfile.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 4 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+              };
+        
+            html2Pdf().set(opt).from(ref.current).save()
         })
     }
 
     return (
-        <button className="btn btn-success mt-1" onClick={ handleClick }>{'Generate Report(s) For Trimester ' + (selected.trimester + 1)}</button>
+        <button ref={ ref } className="btn btn-success mt-1" onClick={ handleClick }>{'Generate Report(s) For Trimester ' + (selected.trimester + 1)}</button>
     );
 }
 
