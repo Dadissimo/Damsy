@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 
 import Import from './component/Import';
 import Preview from './component/Preview';
@@ -22,6 +23,12 @@ const Application = () => {
     };
 
     if (data) console.log(data);
+
+    React.useEffect(() => {
+        axios.get("http://127.0.0.1:8000/subject/")
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
+    })
 
     return (
         <div>
