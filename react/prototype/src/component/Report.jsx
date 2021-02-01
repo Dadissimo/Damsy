@@ -78,7 +78,7 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
         student.topics.map(topic => ({text: topic.grade.testScore, fillColor: getFillColor(topic.grade.testScore)}))
     ).concat({text: student.avarage.testScore, fillColor: getFillColor(student.avarage.testScore)});
 
-    const plot = Plot.createSVG(student);
+    // const plot = Plot.createSVG(student);
 
     const content = [
         {
@@ -111,10 +111,6 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
                 if(index === 0) applyVerticalAlignment(node, index, 'bottom');
                 return 0;
             }, },
-        },
-        {
-            svg: plot,
-            alignment: 'center'
         }
     ];
 

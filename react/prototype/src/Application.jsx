@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import Import from './component/Import';
 import Preview from './component/Preview';
-import Report from './component/ReportHtml2pdf';
+import Report from './component/Report';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -24,11 +24,11 @@ const Application = () => {
 
     if (data) console.log(data);
 
-    React.useEffect(() => {
-        axios.get("http://127.0.0.1:8000/subject/")
-            .then(res => console.log(res))
-            .catch(err => console.log(err));
-    })
+    // React.useEffect(() => {
+    //     axios.get("http://127.0.0.1:8000/subject/")
+    //         .then(res => console.log(res))
+    //         .catch(err => console.log(err));
+    // })
 
     return (
         <div>

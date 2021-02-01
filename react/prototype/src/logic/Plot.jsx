@@ -1,21 +1,21 @@
 import * as d3 from 'd3';
 
-const createSVG = (student) => {
+const createSVG = (student, config) => {
     const svg = d3.select(document.createElementNS('http://www.w3.org/2000/svg', 'svg'));
     
     // set the dimensions and margins of the graph
     const margin = {top: 10, right: 30, bottom: 90, left: 60},
-        width = 360 - margin.left - margin.right,
-        height = 300 - margin.top - margin.bottom;
+        width = (config.width || 360) - margin.left - margin.right,
+        height = (config.height || 300) - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
     const canvas = svg
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         // .style('background-color', '#eeeeee')
-    .append("g")
-        .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
+        .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
 
     const data = student.topics.map((grade, i) => ({...grade, index: i}));
     
@@ -29,6 +29,37 @@ const createSVG = (student) => {
     .domain([0, 100])
     .range([ height, 0 ]);
 
+    // Add dots
+    canvas.append('g')
+        .selectAll("dot")
+        .data(data)
+        .enter()
+        .append("circle")
+            .attr("cx", function (d) { console.log(x(d.name)); return (x(d.name) + 101/2) } )
+            .attr("cy", function (d) { return y(d.grade.testScore) } )
+            .attr("r", 5)
+            .style("fill", "steelblue")
+
+    canvas.append('g')
+        .selectAll("dot")
+        .data(data)
+        .enter()
+        .append("circle")
+            .attr("cx", function (d) { return (x(d.name) + 101/2) } )
+            .attr("cy", function (d) { return y(d.grade.assignmentGrade / 3 * 100) } )
+            .attr("r", 5)
+            .style("fill", "red")
+
+    canvas.append('g')
+        .selectAll("dot")
+        .data(data)
+        .enter()
+        .append("circle")
+            .attr("cx", function (d) { return (x(d.name) + 101/2) } )
+            .attr("cy", function (d) { return y(d.grade.difficulty / 4 * 100) } )
+            .attr("r", 5)
+            .style("fill", "green")
+
     // Add the lines
     canvas.append("path")
         .datum(data)
@@ -36,7 +67,7 @@ const createSVG = (student) => {
         .attr("stroke", "steelblue")
         .attr("stroke-width", 1.5)
         .attr("d", d3.line()
-            .x(function(d) { return x(d.name) })
+            .x(function(d) { return (x(d.name) + 101/2) })
             .y(function(d) { return y(d.grade.testScore) })
             .curve(d3.curveBasis)
             );
@@ -47,7 +78,7 @@ const createSVG = (student) => {
         .attr("stroke", "red")
         .attr("stroke-width", 1.5)
         .attr("d", d3.line()
-            .x(function(d) { return x(d.name) })
+            .x(function(d) { return (x(d.name) + 101/2) })
             .y(function(d) { return y(d.grade.assignmentGrade / 3 * 100) })
             .curve(d3.curveBasis)
             );
@@ -58,7 +89,7 @@ const createSVG = (student) => {
         .attr("stroke", "green")
         .attr("stroke-width", 1.5)
         .attr("d", d3.line()
-            .x(function(d) { return x(d.name) })
+            .x(function(d) { return (x(d.name) + 101/2) })
             .y(function(d) { return y(d.grade.difficulty / 4 * 100) })
             .curve(d3.curveBasis)
             );
@@ -66,7 +97,7 @@ const createSVG = (student) => {
     canvas.append("g")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x)
-            // .tickFormat(d => d.charAt(0))
+            .tickFormat(d => d.charAt(0))
         );
 
     canvas.append("g")

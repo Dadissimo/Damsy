@@ -1,5 +1,20 @@
+import React from 'react';
+import {select} from 'd3';
+
+import Plot from '../logic/Plot'
+
+const TAB = {
+    SUMMARY: 0,
+    PREVIEW: 1
+};
+
 const Preview = ({data, selected, onChange}) => {
+    const [activeTab, setActiveTab] = React.useState(TAB.SUMMARY);
+    const svgRef = React.useRef(null);
+
     if (!data) return null;
+
+    const handleTabChange = newTabId => setActiveTab(newTabId);
 
     const renderTrimesterButtons = data.map((d, i) => {
         const handleClick = () => onChange('trimester', i);
@@ -46,13 +61,40 @@ const Preview = ({data, selected, onChange}) => {
             <div className="d-flex justify-content-between">
                 {renterClassButtons}
             </div>
-            <ClassPreview data={ selectedClass } />
+            <ul className="nav nav-tabs">
+                <li className="nav-item" onClick={ () => handleTabChange(TAB.SUMMARY) }>
+                    <div style={{cursor: 'pointer'}} className={'nav-link ' + (activeTab === TAB.SUMMARY ? 'active' : '')}>{'Summary'}</div>
+                </li>
+                <li className="nav-item" onClick={ () => handleTabChange(TAB.PREVIEW) }>
+                    <div style={{cursor: 'pointer'}} className={'nav-link ' + (activeTab === TAB.PREVIEW ? 'active' : '')}>{'Preview'}</div>
+                </li>
+            </ul>
+            {activeTab === TAB.SUMMARY && <ClassPreview data={ selectedClass } />}
+            {activeTab === TAB.PREVIEW && <ChartPreview canvas={ svgRef } data={ selectedClass } />}
+            <div ref={svgRef} />
         </div>
     );
 }
 
+const ChartPreview = ({data, canvas}) => {
+    const firstStudent = data.students[0];
+
+    React.useEffect(() => {
+        const svgString = Plot.createSVG(firstStudent, {width: 800, height: 500});
+        const node = select(canvas.current).append('div').html(svgString);
+
+        return () => node.remove();
+    }, [data, canvas])
+
+    return (
+        <h3>
+            {firstStudent.name}
+        </h3>
+    );
+}
+
 const ClassPreview = ({data}) => {
-    const {name, students} = data;
+    const {students} = data;
 
     const renderStudents = students.map(student => {
         return (
@@ -68,8 +110,7 @@ const ClassPreview = ({data}) => {
     })
 
     return (
-        <div>
-            <h6 className="border-bottom pb-1">{'Class: ' + name}</h6>
+        <div className="border-right border-left border-bottom p-2">
             {renderStudents}
         </div>
     )
