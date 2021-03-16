@@ -74,7 +74,7 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
     //         }
     //     })
     // ).concat({text: 'Ø', alignment: 'center'});
-    const assignments = ['Assignments']
+    const header = ['Assignments']
         .concat(student.topics.map(topic => topic.name))
         .concat({text: 'Ø', alignment: 'center'});
 
@@ -92,7 +92,7 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
         .concat({text: student.avarage.testScore, fillColor: getFillColor(student.avarage.testScore)});
 
     if (student.avarage.previous) {
-        assignments.push({text: 'letzter Ø', alignment: 'center'});
+        header.push({text: 'letzter Ø', alignment: 'center'});
         execution.push(student.avarage.previous.assignmentGrade);
         stars.push(student.avarage.previous.difficulty);
         score.push({text: student.avarage.previous.testScore, fillColor: getFillColor(student.avarage.previous.testScore)});
@@ -119,8 +119,13 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
         {text: 'Name: ' + student.name},
         {
             table: {
+                widths: header.map((text, i) => {
+                    if (i === 0) return '*';
+                    if (text.text?.includes('Ø')) return 35;
+                    return 60;
+                }),
                 body: [
-                    assignments,
+                    header,
                     execution,
                     stars,
                     score
