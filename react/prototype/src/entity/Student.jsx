@@ -1,8 +1,9 @@
 class Student {
-    constructor(name, topics, grade) {
+    constructor(name, topics, grade, agreements) {
         this.name = name;
         this.topics = topics;
         this.grade = grade;
+        this.agreements = agreements;
 
         const assignmentAvarage = this.getAvarage(topics.map(topic => topic.grade.assignmentGrade));
         const difficultyAvarage = this.getAvarage(topics.map(topic => topic.grade.difficulty));

@@ -55,7 +55,9 @@ class XLSXImport {
     };
 
     createStudents = (topicDefinitions, studentData) => {
+        topicDefinitions = [...topicDefinitions];
         const gradeDef = topicDefinitions.splice(topicDefinitions.length - 1, 1)[0];
+        const agreementDef = topicDefinitions.splice(topicDefinitions.length - 1, 1)[0];
 
         return studentData.map(student => {
             const name = student[0];
@@ -70,8 +72,10 @@ class XLSXImport {
             })
 
             const grade = student[gradeDef.column];
+
+            const agreements = [student[agreementDef.column], student[agreementDef.column + 1], student[agreementDef.column + 2]];
     
-            return new Student(name, topics, grade);
+            return new Student(name, topics, grade, agreements);
         })
     }
     
