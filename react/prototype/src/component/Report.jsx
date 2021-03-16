@@ -131,6 +131,22 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
                 if(index === 0) applyVerticalAlignment(node, index, 'bottom');
                 return 0;
             }, },
+        },
+        {
+            columns: [
+                {width: '*', text: ''},
+                {
+                    width: 'auto',
+                    table: {
+                        widths: [300, '*'],
+                        heights: [20, 30],
+                        body: [
+                            ['Abschlussprüfung', 'Note'],
+                            ['', student.grade]
+                        ]
+                    },
+                }
+            ]
         }
     ];
 

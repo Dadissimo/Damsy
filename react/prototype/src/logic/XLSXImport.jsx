@@ -46,15 +46,17 @@ class XLSXImport {
                 return {name: c.name, students};
             });
 
-            return {classes, file: file, metaData, topics: topicsData};
+            return {classes, file: file, metaData, topics: topicsData.map(t => t.name)};
         })
     }
 
     createTopicDefinitions = topicsData => {
-        return topicsData.map(name => new TopicDefinition(name, {name: 'Mathematic'}, 1));
+        return topicsData.map(topic => new TopicDefinition(topic.name, {name: 'Mathematic'}, 1, topic.col));
     };
 
     createStudents = (topicDefinitions, studentData) => {
+        const gradeDef = topicDefinitions.splice(topicDefinitions.length - 1, 1)[0];
+
         return studentData.map(student => {
             const name = student[0];
     
@@ -66,8 +68,10 @@ class XLSXImport {
                 const grade = new Grade(assignmentGrade, difficulty, testScore);
                 return new Topic(def, grade);
             })
+
+            const grade = student[gradeDef.column];
     
-            return new Student(name, topics);
+            return new Student(name, topics, grade);
         })
     }
     
@@ -112,9 +116,11 @@ class XLSXImport {
     
     extractTopicData = data => {
         const namingRow = data[TOPIC_NAMES_POS];
-        const topicsData = namingRow.filter(topic => topic);
+        const topicsData = namingRow
+            .map((topic, col) => ({name: topic, col }))
+            .filter(topic => topic.name);
         topicsData.splice(0, 1) // remove name
-        topicsData.splice(topicsData.length - 2, 2); // remove finale grading & total score
+        topicsData.splice(topicsData.length - 1, 1); // remove finale grading & total score
         return topicsData;
     }
 }
