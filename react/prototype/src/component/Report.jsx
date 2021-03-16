@@ -139,30 +139,28 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
         },
         {
             columns: [
-                {width: '*', text: ''},
                 {
-                    width: 'auto',
+                    width: '*',
                     table: {
-                        widths: [300, 75],
-                        heights: [20, 20],
+                        widths: [300, 25],
+                        heights: [20, 20, 20, 20],
                         body: [
-                            ['Abschlussprüfung', 'Note'],
-                            ['', student.grade]
+                            ['Vereinbarungen', ''],
+                            [student.agreements[0], ''],
+                            [student.agreements[1], ''],
+                            [student.agreements[2], ''],
                         ]
                     },
                     style: 'table'
-                }
-            ]
-        },
-        {
-            columns: [
-                {width: '*', text: ''},
+                },
                 {
                     width: 'auto',
                     table: {
                         widths: [300, 75],
-                        heights: [20, 20],
+                        heights: [20, 20, 20, 20],
                         body: [
+                            ['Abschlussprüfung', 'Note'],
+                            ['', student.grade],
                             ['Arbeitshaltung', ''],
                             ['', '']
                         ]
@@ -170,7 +168,7 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
                     style: 'table'
                 }
             ]
-        }
+        },
     ];
 
     return content;
