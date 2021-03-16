@@ -10,16 +10,28 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const Report = ({data, selected}) => {
     if (!data) return <button disabled className="btn btn-success mt-1">{'Generate Trimester Report'}</button>;
 
-    data = data[selected.trimester];
+    const currentTrimesterData = data[selected.trimester];
+
+    const lastTrimesterData = selected.trimester > 0 ? data[selected.trimester - 1] : null;
 
     const handleClick = () => {
-        const {classes, metaData} = data;
+        const {classes, metaData} = currentTrimesterData;
         if (!classes) return null;
 
-        classes.forEach(currentClass => {
-            const contents = generateContents(currentClass.students, metaData);
+        classes.forEach((currentClass, index) => {
+            const lastTrimesterClass = lastTrimesterData?.classes[index];
+            const {students, name} = currentClass;
+
+            if (lastTrimesterClass) {
+                students.forEach((student, index) => {
+                    const studentLastTrimester = lastTrimesterClass.students[index];
+                    student.avarage.previous = studentLastTrimester.avarage
+                })
+            }
+
+            const contents = generateContents(students, metaData);
             const docDefinition = generateDocDefinition(contents);
-            pdfMake.createPdf(docDefinition).download(metaData.trimester + ' Trimester ' + metaData.level + currentClass.name + '.pdf');
+            pdfMake.createPdf(docDefinition).download(metaData.trimester + ' Trimester ' + metaData.level + name + '.pdf');
         })
     }
 
@@ -62,21 +74,29 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
     //         }
     //     })
     // ).concat({text: 'Ø', alignment: 'center'});
-    const assignments = ['Assignments'].concat(
-            student.topics.map(topic => topic.name)
-        ).concat({text: 'Ø', alignment: 'center'});
+    const assignments = ['Assignments']
+        .concat(student.topics.map(topic => topic.name))
+        .concat({text: 'Ø', alignment: 'center'});
 
-    const execution = ['Ausführung'].concat(
-        student.topics.map(topic => topic.grade.assignmentGrade)
-    ).concat(student.avarage.assignmentGrade);
-    
-    const stars = ['Sterne'].concat(
-        student.topics.map(topic => convertToStars(topic.grade.difficulty))
-    ).concat(student.avarage.difficulty);
+    const execution = ['Ausführung']
+        .concat(student.topics.map(topic => topic.grade.assignmentGrade))
+        .concat(student.avarage.assignmentGrade);
 
-    const score = ['Prüfung in %'].concat(
-        student.topics.map(topic => ({text: topic.grade.testScore, fillColor: getFillColor(topic.grade.testScore)}))
-    ).concat({text: student.avarage.testScore, fillColor: getFillColor(student.avarage.testScore)});
+    const stars = ['Sterne']
+        .concat(student.topics.map(topic => convertToStars(topic.grade.difficulty)))
+        .concat(student.avarage.difficulty);
+
+
+    const score = ['Prüfung in %']
+        .concat(student.topics.map(topic => ({text: topic.grade.testScore, fillColor: getFillColor(topic.grade.testScore)})))
+        .concat({text: student.avarage.testScore, fillColor: getFillColor(student.avarage.testScore)});
+
+    if (student.avarage.previous) {
+        assignments.push({text: 'letzter Ø', alignment: 'center'});
+        execution.push(student.avarage.previous.assignmentGrade);
+        stars.push(student.avarage.previous.difficulty);
+        score.push({text: student.avarage.previous.testScore, fillColor: getFillColor(student.avarage.previous.testScore)});
+    }
 
     // const plot = Plot.createSVG(student);
 
