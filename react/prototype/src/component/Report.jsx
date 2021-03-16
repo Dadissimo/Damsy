@@ -98,7 +98,7 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
         score.push({text: student.avarage.previous.testScore, fillColor: getFillColor(student.avarage.previous.testScore)});
     }
 
-    // const plot = Plot.createSVG(student);
+    const plot = Plot.createSVG(student);
 
     const content = [
         {
@@ -169,6 +169,10 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
                 }
             ]
         },
+        {
+            svg: plot,
+            alignment: 'center'
+        }
     ];
 
     return content;

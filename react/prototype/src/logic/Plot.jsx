@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-const createSVG = (student, config) => {
+const createSVG = (student, config = {}) => {
     const svg = d3.select(document.createElementNS('http://www.w3.org/2000/svg', 'svg'));
     
     // set the dimensions and margins of the graph

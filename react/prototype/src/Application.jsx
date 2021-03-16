@@ -13,6 +13,8 @@ const Application = () => {
     const [data, setData] = React.useState(undefined);
     const [selected, setSelected] = React.useState(defaultSelection);
 
+    const ref = React.useRef();
+
     const handleImportChange = result => setData(result);
     const handleClear = () => {
         setData(undefined);
@@ -38,11 +40,11 @@ const Application = () => {
                     <div className="col-3">
                         <div className="bg-light p-4 d-flex flex-column justify-content-between" style={{height: '90vh'}}>
                             <Import onChange={ handleImportChange } onClear={ handleClear } />
-                            <Report data={ data } selected={ selected } />
+                            <Report plotRef={ ref } data={ data } selected={ selected } />
                         </div>
                     </div>
                     <div className="col">
-                        <Preview data={ data } selected={ selected } onChange={ handlePreviewChange } />
+                        <Preview plotRef={ ref } data={ data } selected={ selected } onChange={ handlePreviewChange } />
                     </div>
                 </div>
             </div>

@@ -8,7 +8,7 @@ const TAB = {
     PREVIEW: 1
 };
 
-const Preview = ({data, selected, onChange}) => {
+const Preview = ({data, selected, onChange, plotRef}) => {
     const [activeTab, setActiveTab] = React.useState(TAB.SUMMARY);
     const svgRef = React.useRef(null);
 
@@ -43,7 +43,7 @@ const Preview = ({data, selected, onChange}) => {
     const selectedClass = classes[selected.class];
 
     return (
-        <div className="m-1">
+        <div ref={ plotRef } className="m-1">
             <h6 className="border-bottom pb-1 mt-2">{'Imported from: ' + file.name}</h6>
             <h6 className="d-flex justify-content-around">
                 <p className="mb-0">Teacher: {metaData.teacher}</p>

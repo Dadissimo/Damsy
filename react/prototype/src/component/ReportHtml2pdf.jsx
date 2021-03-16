@@ -5,8 +5,7 @@ import html2Pdf from 'html2pdf.js';
 import Plot from '../logic/Plot';
 
 console.log(html2Pdf);
-const Report = ({data, selected}) => {
-    const ref = React.useRef();
+const Report = ({data, selected, plotRef}) => {
 
     if (!data) return <button disabled className="btn btn-success mt-1">{'Generate Trimester Report'}</button>;
 
@@ -29,12 +28,12 @@ const Report = ({data, selected}) => {
                 jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
               };
         
-            html2Pdf().set(opt).from(ref.current).save()
+            html2Pdf().set(opt).from(plotRef.current).save()
         })
     }
 
     return (
-        <button ref={ ref } className="btn btn-success mt-1" onClick={ handleClick }>{'Generate Report(s) For Trimester ' + (selected.trimester + 1)}</button>
+        <button className="btn btn-success mt-1" onClick={ handleClick }>{'Generate Report(s) For Trimester ' + (selected.trimester + 1)}</button>
     );
 }
 
