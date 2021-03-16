@@ -48,7 +48,7 @@ const generateDocDefinition = content => {
                 header: {
                     fontSize: 18,
                     bold: true,
-                    margin: [0, 0, 0, 10]
+                    margin: [5, 0, 0, 5]
                 },
                 table: {
                     margin: [0, 5, 0, 15]
@@ -118,7 +118,6 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
         },
         {text: 'Name: ' + student.name},
         {
-            style: 'table',
             table: {
                 body: [
                     assignments,
@@ -131,6 +130,7 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
                 if(index === 0) applyVerticalAlignment(node, index, 'bottom');
                 return 0;
             }, },
+            style: 'table'
         },
         {
             columns: [
@@ -138,13 +138,31 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
                 {
                     width: 'auto',
                     table: {
-                        widths: [300, '*'],
-                        heights: [20, 30],
+                        widths: [300, 75],
+                        heights: [20, 20],
                         body: [
                             ['Abschlussprüfung', 'Note'],
                             ['', student.grade]
                         ]
                     },
+                    style: 'table'
+                }
+            ]
+        },
+        {
+            columns: [
+                {width: '*', text: ''},
+                {
+                    width: 'auto',
+                    table: {
+                        widths: [300, 75],
+                        heights: [20, 20],
+                        body: [
+                            ['Arbeitshaltung', ''],
+                            ['', '']
+                        ]
+                    },
+                    style: 'table'
                 }
             ]
         }
