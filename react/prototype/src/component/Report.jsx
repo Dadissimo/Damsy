@@ -98,7 +98,7 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
         score.push({text: student.avarage.previous.testScore, fillColor: getFillColor(student.avarage.previous.testScore)});
     }
 
-    const plot = Plot.createSVG(student);
+    // const plot = Plot.createSVG(student);
 
     const content = [
         {
@@ -169,10 +169,10 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
                 }
             ]
         },
-        {
-            svg: plot,
-            alignment: 'center'
-        }
+        // {
+        //     svg: plot,
+        //     alignment: 'center'
+        // }
     ];
 
     return content;
@@ -180,6 +180,8 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
 
 function convertToStars(value) {
     if (isSpecialRemark(value)) return value;
+    if (value === 0) return '0';
+    
     let str = '';
     for (let index = 0; index < value; index++) {
         str += '*';                

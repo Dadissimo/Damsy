@@ -13,17 +13,22 @@ class Student {
     }
 
     getAvarage = grades => {
+        grades = grades.filter(grade => grade !== null);
+
         let avarage = 0;
         grades.forEach(grade => {
             avarage += this.convertSpecialRemarksToGrades(grade);
         })
-        const len = grades.filter(grade => grade !== 'k').length;
-        return (avarage / len).toFixed(2);
+        const len = grades.filter(grade => grade !== 'k' && grade !== 'K' && grade !== '-' && grade !== '').length;
+        const grade = (avarage / len).toFixed(2);
+        return grade;
     }
 
     convertSpecialRemarksToGrades = value => {
-        if (value === 'f') return 0;
-        if (value === 'k') return null;
+        if (value === 'f' || value === 'F') return 0;
+        if (value === 'k' || value === 'K') return null;
+        if (value === '-') return null;
+
         return +(value);
     }
 }
