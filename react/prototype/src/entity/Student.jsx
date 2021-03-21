@@ -5,14 +5,14 @@ class Student {
         this.grade = grade;
         this.agreements = agreements;
 
-        const assignmentAvarage = this.getAvarage(topics.map(topic => topic.grade.assignmentGrade));
-        const difficultyAvarage = this.getAvarage(topics.map(topic => topic.grade.difficulty));
-        const testScoreAvarage = this.getAvarage(topics.map(topic => topic.grade.testScore));
+        const assignmentAvarage = Student.getAvarage(topics.map(topic => topic.grade.assignmentGrade));
+        const difficultyAvarage = Student.getAvarage(topics.map(topic => topic.grade.difficulty));
+        const testScoreAvarage = Student.getAvarage(topics.map(topic => topic.grade.testScore));
         
         this.avarage = {assignmentGrade: assignmentAvarage, difficulty: difficultyAvarage, testScore: testScoreAvarage};
     }
 
-    getAvarage = grades => {
+    static getAvarage = grades => {
         grades = grades.filter(grade => grade !== null);
 
         let avarage = 0;
@@ -21,10 +21,10 @@ class Student {
         })
         const len = grades.filter(grade => grade !== 'k' && grade !== 'K' && grade !== '-' && grade !== '').length;
         const grade = (avarage / len).toFixed(2);
-        return grade;
+        return +(grade);
     }
 
-    convertSpecialRemarksToGrades = value => {
+    static convertSpecialRemarksToGrades = value => {
         if (value === 'f' || value === 'F') return 0;
         if (value === 'k' || value === 'K') return null;
         if (value === '-') return null;
