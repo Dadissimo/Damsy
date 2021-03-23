@@ -56,6 +56,7 @@ class XLSXImport {
 
     createStudents = (topicDefinitions, studentData) => {
         topicDefinitions = [...topicDefinitions];
+        const totalGradeDef = topicDefinitions.splice(topicDefinitions.length - 1, 1)[0];
         const gradeDef = topicDefinitions.splice(topicDefinitions.length - 1, 1)[0];
         const agreementDef = topicDefinitions.splice(topicDefinitions.length - 1, 1)[0];
 
@@ -73,9 +74,11 @@ class XLSXImport {
 
             const grade = student[gradeDef.column];
 
+            const totalGrade = student[totalGradeDef.column];
+
             const agreements = [student[agreementDef.column], student[agreementDef.column + 1], student[agreementDef.column + 2]];
     
-            return new Student(name, topics, grade, agreements);
+            return new Student(name, topics, grade, totalGrade, agreements);
         })
     }
     
@@ -124,7 +127,7 @@ class XLSXImport {
             .map((topic, col) => ({name: topic, col }))
             .filter(topic => topic.name);
         topicsData.splice(0, 1) // remove name
-        topicsData.splice(topicsData.length - 1, 1); // remove finale grading & total score
+        topicsData.splice(topicsData.length - 1, 1); // remove total score
         return topicsData;
     }
 }

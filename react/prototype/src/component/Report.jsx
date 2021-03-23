@@ -176,11 +176,12 @@ const generateReportForStudent = (student, metaData, noBreak = false) => {
                             ['Abschlussprüfung', 'Note'],
                             ['', student.grade],
                             ['Arbeitshaltung', ''],
-                            ['', '']
+                            ['', ''],
+                            ['Gesamtnote', student.totalGrade],
                         ]
                     },
                     style: 'table'
-                }
+                },
             ]
         },
         // {
